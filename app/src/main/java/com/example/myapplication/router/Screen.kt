@@ -6,8 +6,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.ui.graphics.vector.ImageVector
 
-sealed class Screen(val route: String, val title: String, val icon: ImageVector){
-    data object Home: Screen("home", "Home", Icons.Default.Home)
-    data object Favorite: Screen("favorite", "Favorite", Icons.Default.Place)
-    data object UseDetail: Screen("useDetail", "UseDetail", Icons.Default.DateRange)
+sealed class Screen(val route: Any, val title: String, val icon: ImageVector){
+    data object Home: Screen(HomeRoute, "Home", Icons.Default.Home)
+    data object Favorite: Screen(FavoriteRoute, "Favorite", Icons.Default.Place)
+    data object UseDetail: Screen(UseDetailRoute, "UseDetail", Icons.Default.DateRange)
 }

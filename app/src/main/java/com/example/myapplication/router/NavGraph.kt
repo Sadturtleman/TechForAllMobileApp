@@ -9,11 +9,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.myapplication.data.model.SearchResult
 import com.example.myapplication.screen.DestinationConfirmScreen
 import com.example.myapplication.screen.DetailUseScreen
 import com.example.myapplication.screen.FavoriteScreen
 import com.example.myapplication.screen.HomeScreen
 import com.example.myapplication.screen.DestinationInputScreen
+import com.example.myapplication.screen.DestinationListScreen
 import com.example.myapplication.screen.ManualInputScreen
 import com.example.myapplication.screen.TaxiAssignedScreen
 import com.example.myapplication.screen.TaxiFinishedScreen
@@ -27,14 +29,22 @@ fun NavGraph(
     paddingValues: PaddingValues
 ) {
     NavHost(navController, startDestination = Screen.Home.route) {
-        composable(Screen.Home.route) {
-            HomeScreen(paddingValues)
+        composable<HomeRoute> {
+            HomeScreen(
+                paddingValues = paddingValues,
+                onCallClick = {
+                    navController.navigate(DestinationInputRoute)
+                }
+            )
         }
-        composable(Screen.UseDetail.route) {
+        composable<UseDetailRoute> {
             DetailUseScreen(paddingValues)
         }
-        composable(Screen.Favorite.route) {
-            FavoriteScreen(paddingValues)
+        composable<FavoriteRoute> {
+            FavoriteScreen(
+                paddingValues = paddingValues,
+                navController = navController
+            )
         }
         composable<DestinationInputRoute> {
             val viewModel: VoiceViewModel = hiltViewModel()
@@ -74,10 +84,25 @@ fun NavGraph(
                 placeName = args.placeName,
                 address = args.address,
                 onBackClick = { navController.popBackStack() },
-                onConfirmClick = { /* 택시 호출 */ },
-                onListClick = { navController.navigate(Screen.Favorite.route) }
+                onConfirmClick = { navController.navigate(TaxiSearchingRoute) },
+                onListClick = {
+                    // 🔥 검색어 기반으로 리스트 넘기기
+                    val mockResults = listOf(
+                        SearchResult("서울역", "서울 중구 한강대로 405"),
+                        SearchResult("서울역 버스환승센터", "서울 중구 세종대로 18길"),
+                        SearchResult("서울역 1번출구", "서울 중구 청파로 378")
+                    )
+
+                    navController.navigate(
+                        DestinationListRoute(
+                            query = args.placeName,
+                            results = mockResults
+                        )
+                    )
+                }
             )
         }
+
 
 
 
@@ -92,14 +117,21 @@ fun NavGraph(
                 },
                 onCancel = {
                     navController.popBackStack()
+                },
+                onAutoNext = {
+                    navController.navigate(TaxiAssignedRoute)
                 }
             )
         }
 
+
         composable<TaxiAssignedRoute> {
             TaxiAssignedScreen(
-                onCall = { /* TODO */ },
-                onCancel = { navController.popBackStack() }
+                onCall = { /* TODO: 전화 */ },
+                onCancel = { navController.popBackStack() },
+                onAutoNext = {
+                    navController.navigate(TaxiFinishedRoute)
+                }
             )
         }
 
@@ -139,5 +171,22 @@ fun NavGraph(
             )
         }
 
+        composable<DestinationListRoute> { entry ->
+            val args = entry.toRoute<DestinationListRoute>()
+
+            DestinationListScreen(
+                query = args.query,
+                resultList = args.results,
+                onBackClick = { navController.popBackStack() },
+                onItemClick = { selected ->
+                    navController.navigate(
+                        DestinationConfirmRoute(
+                            placeName = selected.placeName,
+                            address = selected.address
+                        )
+                    )
+                }
+            )
+        }
     }
 }

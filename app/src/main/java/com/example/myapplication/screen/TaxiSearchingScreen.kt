@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,8 +21,15 @@ import com.example.myapplication.screen.component.WhiteButton
 @Composable
 fun TaxiSearchingScreen(
     onChangeAddress: () -> Unit = {},
-    onCancel: () -> Unit = {}
+    onCancel: () -> Unit = {},
+    onAutoNext: () -> Unit // 🔥 다음 화면(TaxiAssigned)으로 이동
 ) {
+    // 🔥 화면 진입 시 자동으로 3초 후 다음 화면으로
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(3000)  // 3초 딜레이
+        onAutoNext()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,10 +57,16 @@ fun TaxiSearchingScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        WhiteButton(text = "주소 다시 선택", onClick = onChangeAddress)
+        WhiteButton(
+            text = "주소 다시 선택",
+            onClick = onChangeAddress
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        PrimaryButton(text = "호출 취소", onClick = onCancel)
+        PrimaryButton(
+            text = "호출 취소",
+            onClick = onCancel
+        )
     }
 }

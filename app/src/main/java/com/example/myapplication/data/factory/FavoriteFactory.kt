@@ -7,20 +7,20 @@ class FavoriteFactory @Inject constructor(){
     fun getFavoriteList(): List<Favorite> {
         return listOf(
             Favorite(
-                title = "집",
-                detailTitle = "강동구 집"
+                title = "서울역",
+                address = "서울특별시 중구 한강대로 405"
             ),
             Favorite(
-                title = "서울 병원",
-                detailTitle = "강동구 집"
+                title = "서울대병원",
+                address = "서울특별시 종로구 대학로 101"
             ),
             Favorite(
-                title = "마트",
-                detailTitle = "강동구 집"
+                title = "고려대",
+                address = "서울특별시 성북구 안암로 145"
             ),
             Favorite(
-                title = "서울 아파트",
-                detailTitle = "강동구 집"
+                title = "서울시청",
+                address = "서울특별시 중구 세종대로 110"
             )
         )
     }

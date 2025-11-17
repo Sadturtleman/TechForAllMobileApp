@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,8 +27,16 @@ fun TaxiAssignedScreen(
     carNumber: String = "13가 2345",
     eta: String = "3분 후 도착 예정",
     onCall: () -> Unit = {},
-    onCancel: () -> Unit = {}
+    onCancel: () -> Unit = {},
+    onAutoNext: () -> Unit     // 🔥 자동 이동 콜백 추가됨
 ) {
+
+    // 🔥 화면 진입 시 4초 후 자동 이동
+        LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(4000)
+        onAutoNext()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()

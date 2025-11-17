@@ -1,6 +1,7 @@
 package com.example.myapplication.screen.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,18 +36,20 @@ import com.example.myapplication.data.model.Favorite
 fun FavoriteCard(
     favorite: Favorite,
     color: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}   // ← 추가
 ) {
     Box(
         modifier = modifier
-            .aspectRatio(1f) // 정사각형 유지
+            .aspectRatio(1f)
             .shadow(
                 elevation = 4.dp,
                 ambientColor = Color(0x40000000),
                 spotColor = Color(0x40000000)
             )
             .clip(RoundedCornerShape(32.dp))
-            .background(color),
+            .background(color)
+            .clickable { onClick() },   // ← 클릭 가능
         contentAlignment = Alignment.Center
     ) {
         AutoResizeText(
@@ -55,6 +58,7 @@ fun FavoriteCard(
         )
     }
 }
+
 
 
 @Composable

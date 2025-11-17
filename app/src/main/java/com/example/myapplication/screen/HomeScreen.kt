@@ -1,6 +1,7 @@
 package com.example.myapplication.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,9 +25,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalTaxi
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.example.myapplication.data.model.rememberTTS
 
 @Composable
-fun HomeScreen(paddingValues: PaddingValues, modifier: Modifier = Modifier){
+fun HomeScreen(
+    paddingValues: PaddingValues,
+    modifier: Modifier = Modifier,
+    onCallClick: () -> Unit = {}     // 🔥 추가
+) {
+    val context = LocalContext.current
+    val tts = rememberTTS(context)
+    LaunchedEffect(Unit) {
+        tts.speak("택시 호출 화면입니다. 호출 버튼을 눌러주세요.")
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -40,7 +53,8 @@ fun HomeScreen(paddingValues: PaddingValues, modifier: Modifier = Modifier){
                 modifier = Modifier
                     .size(265.dp)
                     .clip(RoundedCornerShape(100.dp))
-                    .background(Color(0xFFFFC933)),
+                    .background(Color(0xFFFFC933))
+                    .clickable { onCallClick() },    // 🔥 클릭 처리 추가
                 contentAlignment = Alignment.Center
             ){
                 Column(
@@ -63,6 +77,7 @@ fun HomeScreen(paddingValues: PaddingValues, modifier: Modifier = Modifier){
         }
     }
 }
+
 
 @Preview
 @Composable
