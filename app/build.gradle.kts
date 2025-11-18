@@ -16,6 +16,9 @@ android {
     namespace = "com.example.myapplication"
     compileSdk = 36
 
+    buildFeatures{
+        buildConfig = true
+    }
     defaultConfig {
         applicationId = "com.example.myapplication"
         minSdk = 24
@@ -24,6 +27,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "KAKAO_REST_API_KEY",
+            "\"7601d91159ec911159f8dee8c9e0aa92\""
+        )
     }
 
     buildTypes {
@@ -68,6 +77,10 @@ dependencies {
     implementation(libs.androidx.compose.ui.text)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.androidx.runtime)
+
     ksp(libs.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

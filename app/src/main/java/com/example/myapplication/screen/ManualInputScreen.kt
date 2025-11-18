@@ -32,11 +32,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.myapplication.router.DestinationListRoute
+import com.example.myapplication.ui.viewmodel.SearchViewModel
 
 @Composable
 fun ManualInputScreen(
-    onBackClick: () -> Unit = {},
-    onComplete: (String) -> Unit  // 입력완료 콜백 추가됨
+    navController: NavController,
+    searchViewModel: SearchViewModel = hiltViewModel(),
+    onBackClick: () -> Unit = {}
 ) {
     var text by remember { mutableStateOf("") }
 
@@ -100,7 +105,7 @@ fun ManualInputScreen(
                     }
                 )
 
-                // ❌ 텍스트 지우기 버튼
+                // ❌ 입력 삭제 버튼
                 if (text.isNotEmpty()) {
                     Icon(
                         imageVector = Icons.Default.Close,
@@ -116,7 +121,7 @@ fun ManualInputScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // 완료 버튼
+        // 완료 버튼 → 검색 실행
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -124,7 +129,12 @@ fun ManualInputScreen(
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color(0xFF0F233A))
                 .clickable {
-                    if (text.isNotBlank()) onComplete(text.trim())
+                    if (text.isNotBlank()) {
+                        // 1) 검색 실행
+                        searchViewModel.search(text.trim())
+                        // 2) 리스트 화면으로 이동
+                        navController.navigate(DestinationListRoute(text.trim()))
+                    }
                 },
             contentAlignment = Alignment.Center
         ) {
@@ -137,4 +147,3 @@ fun ManualInputScreen(
         }
     }
 }
-

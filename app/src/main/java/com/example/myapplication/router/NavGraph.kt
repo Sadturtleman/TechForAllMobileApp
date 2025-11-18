@@ -1,26 +1,30 @@
 package com.example.myapplication.router
 
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
-import com.example.myapplication.data.model.SearchResult
 import com.example.myapplication.screen.DestinationConfirmScreen
-import com.example.myapplication.screen.DetailUseScreen
-import com.example.myapplication.screen.FavoriteScreen
 import com.example.myapplication.screen.HomeScreen
 import com.example.myapplication.screen.DestinationInputScreen
 import com.example.myapplication.screen.DestinationListScreen
+import com.example.myapplication.screen.DetailUseScreen
+import com.example.myapplication.screen.FavoriteScreen
 import com.example.myapplication.screen.ManualInputScreen
 import com.example.myapplication.screen.TaxiAssignedScreen
 import com.example.myapplication.screen.TaxiFinishedScreen
 import com.example.myapplication.screen.TaxiSearchingScreen
 import com.example.myapplication.screen.VoiceListeningScreen
+import com.example.myapplication.ui.viewmodel.SearchViewModel
 import com.example.myapplication.ui.viewmodel.VoiceViewModel
 
 @Composable
@@ -28,13 +32,18 @@ fun NavGraph(
     navController: NavHostController,
     paddingValues: PaddingValues
 ) {
-    NavHost(navController, startDestination = Screen.Home.route) {
+    NavHost(
+        navController = navController,
+        startDestination = HomeRoute
+    ) {
+
+        // ---------------------------
+        // 홈 / 기타 화면
+        // ---------------------------
         composable<HomeRoute> {
             HomeScreen(
                 paddingValues = paddingValues,
-                onCallClick = {
-                    navController.navigate(DestinationInputRoute)
-                }
+                onCallClick = { navController.navigate(SearchGraphRoute) }
             )
         }
         composable<UseDetailRoute> {
@@ -46,143 +55,143 @@ fun NavGraph(
                 navController = navController
             )
         }
-        composable<DestinationInputRoute> {
-            val viewModel: VoiceViewModel = hiltViewModel()
-            DestinationInputScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onVoiceClick = {
-                    viewModel.startListening()
-                    navController.navigate(VoiceListeningRoute)
-                },
-                onManualClick = {
-                    navController.navigate(ManualInputRoute)
-                }
-            )
-        }
+        // ---------------------------
+        // 🔥 SEARCH GRAPH (SearchViewModel 공유)
+        // ---------------------------
+        navigation<SearchGraphRoute>(
+            startDestination = DestinationInputRoute
+        ) {
 
-        composable<ManualInputRoute> { entry ->
-            ManualInputScreen(
-                onBackClick = { navController.popBackStack() },
-                onComplete = { inputText ->
-                    navController.navigate(
-                        DestinationConfirmRoute(
-                            placeName = inputText,
-                            address = "주소 검색 예정" // 나중에 geocoder 붙이면 자동 변환
+            // 입력 화면
+            composable<DestinationInputRoute> { entry ->
+                val parentEntry = remember(entry) {
+                    navController.getBackStackEntry(SearchGraphRoute)
+                }
+                val vm: SearchViewModel = hiltViewModel(parentEntry)
+
+                DestinationInputScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onVoiceClick = { navController.navigate(VoiceListeningRoute) },
+                    onManualClick = { navController.navigate(ManualInputRoute) }
+                )
+            }
+
+            // 수동 입력
+            composable<ManualInputRoute> { entry ->
+                val parentEntry = remember(entry) {
+                    navController.getBackStackEntry(SearchGraphRoute)
+                }
+                val vm: SearchViewModel = hiltViewModel(parentEntry)
+
+                ManualInputScreen(
+                    navController = navController,
+                    searchViewModel = vm,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            // 리스트 화면 (검색 결과)
+            composable<DestinationListRoute> { entry ->
+                val args = entry.toRoute<DestinationListRoute>()
+
+                // SearchGraphRoute 스코프 VM 가져오기
+                val parentEntry = remember(entry) {
+                    navController.getBackStackEntry(SearchGraphRoute)
+                }
+                val vm: SearchViewModel = hiltViewModel(parentEntry)
+
+                // 리스트 화면 들어올 때마다 검색 재실행
+                LaunchedEffect(args.query) {
+                    vm.search(args.query)
+                }
+
+                DestinationListScreen(
+                    query = args.query,
+                    searchViewModel = vm,        // ⬅ 여기 중요!!!
+                    onBackClick = { navController.popBackStack() },
+                    onItemClick = { selected ->
+                        navController.navigate(
+                            DestinationConfirmRoute(
+                                placeName = selected.placeName,
+                                address = selected.address
+                            )
                         )
-                    )
+                    }
+                )
+            }
+
+
+
+            // 목적지 최종 확인
+            composable<DestinationConfirmRoute> { entry ->
+                val args = entry.toRoute<DestinationConfirmRoute>()
+
+                val parentEntry = remember(entry) {
+                    navController.getBackStackEntry(SearchGraphRoute)
                 }
-            )
-        }
+                val vm: SearchViewModel = hiltViewModel(parentEntry)
 
-
-        composable<DestinationConfirmRoute> { entry ->
-            val args = entry.toRoute<DestinationConfirmRoute>()
-
-            DestinationConfirmScreen(
-                placeName = args.placeName,
-                address = args.address,
-                onBackClick = { navController.popBackStack() },
-                onConfirmClick = { navController.navigate(TaxiSearchingRoute) },
-                onListClick = {
-                    // 🔥 검색어 기반으로 리스트 넘기기
-                    val mockResults = listOf(
-                        SearchResult("서울역", "서울 중구 한강대로 405"),
-                        SearchResult("서울역 버스환승센터", "서울 중구 세종대로 18길"),
-                        SearchResult("서울역 1번출구", "서울 중구 청파로 378")
-                    )
-
-                    navController.navigate(
-                        DestinationListRoute(
-                            query = args.placeName,
-                            results = mockResults
+                DestinationConfirmScreen(
+                    placeName = args.placeName,
+                    address = args.address,
+                    onBackClick = { navController.popBackStack() },
+                    onConfirmClick = {
+                        navController.navigate(TaxiSearchingRoute)
+                    },
+                    onListClick = {
+                        navController.navigate(
+                            DestinationListRoute(args.placeName)
                         )
-                    )
-                }
-            )
+                    }
+                )
+            }
         }
 
-
-
-
-
-        // ----------------------
+        // ---------------------------
         // 택시 호출 플로우
-        // ----------------------
+        // ---------------------------
         composable<TaxiSearchingRoute> {
             TaxiSearchingScreen(
-                onChangeAddress = {
-                    navController.navigate(DestinationInputRoute)
-                },
-                onCancel = {
-                    navController.popBackStack()
-                },
-                onAutoNext = {
-                    navController.navigate(TaxiAssignedRoute)
-                }
+                onChangeAddress = { navController.navigate(SearchGraphRoute) },
+                onCancel = { navController.popBackStack() },
+                onAutoNext = { navController.navigate(TaxiAssignedRoute) }
             )
         }
-
 
         composable<TaxiAssignedRoute> {
             TaxiAssignedScreen(
-                onCall = { /* TODO: 전화 */ },
+                onCall = {},
                 onCancel = { navController.popBackStack() },
-                onAutoNext = {
-                    navController.navigate(TaxiFinishedRoute)
-                }
+                onAutoNext = { navController.navigate(TaxiFinishedRoute) }
             )
         }
 
         composable<TaxiFinishedRoute> {
             TaxiFinishedScreen(
-                onCall = { /* TODO */ },
-                onSaveFavorite = {
-                    navController.navigate(Screen.Favorite.route)
-                }
+                onCall = {},
+                onSaveFavorite = { navController.navigate(FavoriteRoute) }
             )
         }
 
+        // ---------------------------
+        // 음성 인식 화면
+        // ---------------------------
         composable<VoiceListeningRoute> {
-            val viewModel: VoiceViewModel = hiltViewModel()
-            val text by viewModel.text.collectAsState()
-            val isListening by viewModel.isListening.collectAsState()
+            val vm: VoiceViewModel = hiltViewModel()
+
+            val text by vm.text.collectAsState()
+            val isListening by vm.isListening.collectAsState()
 
             VoiceListeningScreen(
                 text = text,
                 isListening = isListening,
                 onBackClick = { navController.popBackStack() },
                 onStopClick = {
-                    viewModel.stopListening()
-
-                    val result = viewModel.text.value   // 예: “서울역”
-                    val placeName = result
-                    val address = "주소를 찾는 중입니다…"    // 직접 구현 or Naver API
-
+                    vm.stopListening()
                     navController.navigate(
                         DestinationConfirmRoute(
-                            placeName = placeName,
-                            address = address
-                        )
-                    )
-                }
-
-            )
-        }
-
-        composable<DestinationListRoute> { entry ->
-            val args = entry.toRoute<DestinationListRoute>()
-
-            DestinationListScreen(
-                query = args.query,
-                resultList = args.results,
-                onBackClick = { navController.popBackStack() },
-                onItemClick = { selected ->
-                    navController.navigate(
-                        DestinationConfirmRoute(
-                            placeName = selected.placeName,
-                            address = selected.address
+                            placeName = vm.text.value,
+                            address = "주소 확인 중…"
                         )
                     )
                 }

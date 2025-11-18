@@ -16,9 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.data.model.rememberTTS
 import com.example.myapplication.screen.component.PrimaryButton
 import com.example.myapplication.screen.component.WhiteButton
 
@@ -30,9 +32,13 @@ fun TaxiAssignedScreen(
     onCancel: () -> Unit = {},
     onAutoNext: () -> Unit     // 🔥 자동 이동 콜백 추가됨
 ) {
+    val context = LocalContext.current
+    val tts = rememberTTS(context)
+
 
     // 🔥 화면 진입 시 4초 후 자동 이동
-        LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
+        tts.speak("호출 완료")
         kotlinx.coroutines.delay(4000)
         onAutoNext()
     }
