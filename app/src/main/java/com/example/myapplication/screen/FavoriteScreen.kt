@@ -53,8 +53,7 @@ fun FavoriteScreen(
                 onClick = {
                     navController.navigate(
                         DestinationConfirmRoute(
-                            placeName = favorite.title,
-                            address = favorite.address
+                            placeName = favorite.title
                         )
                     )
                 }

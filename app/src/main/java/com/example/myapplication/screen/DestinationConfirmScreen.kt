@@ -1,5 +1,6 @@
 package com.example.myapplication.screen
 
+import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +15,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,10 +39,20 @@ fun DestinationConfirmScreen(
 ) {
 
     val context = LocalContext.current
-    val tts = rememberTTS(context)
+    var isTtsReady by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        tts.speak("$placeName, $address 가 맞습니까?")
+    val tts = remember {
+        TextToSpeech(context) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                isTtsReady = true
+            }
+        }
+    }
+
+    LaunchedEffect(isTtsReady) {
+        if (isTtsReady) {
+            tts.speak("택시 호출 화면입니다. 호출 버튼을 눌러주세요.", TextToSpeech.QUEUE_FLUSH, null, null)
+        }
     }
     Column(
         modifier = Modifier

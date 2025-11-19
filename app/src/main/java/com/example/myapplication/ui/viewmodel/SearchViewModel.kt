@@ -19,10 +19,19 @@ class SearchViewModel @Inject constructor(
     private val _results = MutableStateFlow<List<SearchResult>>(emptyList())
     val results = _results.asStateFlow()
 
+    private val _placeName = MutableStateFlow("")
+    val placeName = _placeName.asStateFlow()
+
+    private val _address = MutableStateFlow("")
+    val address = _address.asStateFlow()
+
+    fun setPlaceInfo(place: String, addr: String) {
+        _placeName.value = place
+        _address.value = addr
+    }
     fun search(query: String) {
         viewModelScope.launch {
             val list = repo.search(query)
-            Log.d("VIEWMODEL", list.size.toString())
             _results.value = list     // ← 이거 넣어줘야 UI에 전달됨
         }
     }

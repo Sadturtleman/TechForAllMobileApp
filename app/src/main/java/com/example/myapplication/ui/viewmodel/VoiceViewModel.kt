@@ -6,69 +6,66 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.myapplication.BuildConfig
+import com.example.myapplication.data.api.KakaoSpeechClient
+import com.example.myapplication.data.di.AudioRecorder
+import com.example.myapplication.data.repository.GeminiRepository
+import com.google.ai.client.generativeai.GenerativeModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 
 class VoiceViewModel(
     application: Application
 ) : AndroidViewModel(application) {
 
-    private val context = application.applicationContext
-
-    private val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
-
     private val _text = MutableStateFlow("")
     val text = _text.asStateFlow()
 
-    private val _isListening = MutableStateFlow(false)
-    val isListening = _isListening.asStateFlow()
+    private val _keywords = MutableStateFlow("")
+    val keywords = _keywords.asStateFlow()
 
-    private val recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
-    }
+    // 🔥 Retrofit 기반 GeminiRepository 제거하고
+    // 🔥 Google Gemini Kotlin SDK 직접 사용
+    private val generativeModel = GenerativeModel(
+        modelName = "gemini-2.5-flash",
+        apiKey = BuildConfig.GEMINI_API_KEY
+    )
 
-    init {
-        speechRecognizer.setRecognitionListener(object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {}
-            override fun onBeginningOfSpeech() {
-                _isListening.value = true
+    fun onVoiceInput(input: String) {
+        Log.d("VoiceViewModel", "Input: $input")
+
+        viewModelScope.launch {
+            try {
+                val response = generativeModel.generateContent(
+                    """
+    문장: "$input"
+    출력 규칙:
+    - 목적지만 단일 단어로 출력
+    - 따옴표 금지
+    - 분석 금지
+    - 설명 금지
+    - 한 글자라도 다른 말 추가 금지
+    - 예시: 서울역 → 서울역
+
+    출력:
+    """.trimIndent()
+                )
+
+                val result = response.text ?: ""
+
+                Log.d("VoiceViewModel", "Gemini Extracted: $result")
+                _keywords.value = result
+
+            } catch (e: Exception) {
+                Log.e("VoiceViewModel", "Gemini Error: ${e.message}")
+                _keywords.value = "Error: ${e.message}"
             }
-
-            override fun onRmsChanged(rmsdB: Float) {}
-            override fun onBufferReceived(buffer: ByteArray?) {}
-            override fun onEndOfSpeech() {
-                _isListening.value = false
-            }
-
-            override fun onError(error: Int) {
-                _isListening.value = false
-            }
-
-            override fun onResults(results: Bundle?) {
-                val data = results
-                    ?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                _text.value = data?.firstOrNull() ?: ""
-            }
-
-            override fun onPartialResults(partialResults: Bundle?) {}
-            override fun onEvent(eventType: Int, params: Bundle?) {}
-        })
-    }
-
-    fun startListening() {
-        speechRecognizer.startListening(recognizerIntent)
-    }
-
-    fun stopListening() {
-        speechRecognizer.stopListening()
-        _isListening.value = false
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        speechRecognizer.destroy()
+        }
     }
 }

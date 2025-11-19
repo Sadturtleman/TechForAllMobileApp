@@ -1,12 +1,21 @@
 package com.example.myapplication.router
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.speech.RecognizerIntent
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -26,6 +35,7 @@ import com.example.myapplication.screen.TaxiSearchingScreen
 import com.example.myapplication.screen.VoiceListeningScreen
 import com.example.myapplication.ui.viewmodel.SearchViewModel
 import com.example.myapplication.ui.viewmodel.VoiceViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun NavGraph(
@@ -64,14 +74,11 @@ fun NavGraph(
 
             // 입력 화면
             composable<DestinationInputRoute> { entry ->
-                val parentEntry = remember(entry) {
-                    navController.getBackStackEntry(SearchGraphRoute)
-                }
-                val vm: SearchViewModel = hiltViewModel(parentEntry)
-
                 DestinationInputScreen(
                     onBackClick = { navController.popBackStack() },
-                    onVoiceClick = { navController.navigate(VoiceListeningRoute) },
+                    onVoiceClick = {
+                        navController.navigate(VoiceListeningRoute)
+                    },
                     onManualClick = { navController.navigate(ManualInputRoute) }
                 )
             }
@@ -113,13 +120,11 @@ fun NavGraph(
                         navController.navigate(
                             DestinationConfirmRoute(
                                 placeName = selected.placeName,
-                                address = selected.address
                             )
                         )
                     }
                 )
             }
-
 
 
             // 목적지 최종 확인
@@ -129,21 +134,43 @@ fun NavGraph(
                 val parentEntry = remember(entry) {
                     navController.getBackStackEntry(SearchGraphRoute)
                 }
-                val vm: SearchViewModel = hiltViewModel(parentEntry)
 
-                DestinationConfirmScreen(
-                    placeName = args.placeName,
-                    address = args.address,
-                    onBackClick = { navController.popBackStack() },
-                    onConfirmClick = {
-                        navController.navigate(TaxiSearchingRoute)
-                    },
-                    onListClick = {
-                        navController.navigate(
-                            DestinationListRoute(args.placeName)
-                        )
-                    }
-                )
+                val vm: SearchViewModel = hiltViewModel(parentEntry)
+                val result = vm.results.collectAsState()
+
+                LaunchedEffect(args.placeName) {
+                    vm.search(args.placeName)
+                }
+                if (result.value.isEmpty()) {
+                    DestinationConfirmScreen(
+                        placeName = "장소 없음",
+                        address = "장소 없음",
+                        onBackClick = { navController.popBackStack() },
+                        onConfirmClick = {
+                            navController.navigate(TaxiSearchingRoute)
+                        },
+                        onListClick = {
+                            navController.navigate(
+                                DestinationListRoute(args.placeName)
+                            )
+                        }
+                    )
+                } else {
+                    DestinationConfirmScreen(
+                        placeName = result.value[0].placeName,
+                        address = result.value[0].address,
+                        onBackClick = { navController.popBackStack() },
+                        onConfirmClick = {
+                            navController.navigate(TaxiSearchingRoute)
+                        },
+                        onListClick = {
+                            navController.navigate(
+                                DestinationListRoute(args.placeName)
+                            )
+                        }
+                    )
+                }
+
             }
         }
 
@@ -177,25 +204,72 @@ fun NavGraph(
         // 음성 인식 화면
         // ---------------------------
         composable<VoiceListeningRoute> {
-            val vm: VoiceViewModel = hiltViewModel()
 
+            val vm: VoiceViewModel = hiltViewModel()
             val text by vm.text.collectAsState()
-            val isListening by vm.isListening.collectAsState()
+
+            // Google 음성 입력 런처
+            val launcher = rememberLauncherForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                val data = result.data
+                val speechText = data
+                    ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                    ?.firstOrNull() ?: ""
+                Log.d("route", speechText)
+                vm.onVoiceInput(speechText)
+            }
+
+            // 이 화면 들어오면 자동으로 음성 입력 실행
+            LaunchedEffect(Unit) {
+                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                    putExtra(
+                        RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                    )
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
+                }
+
+                launcher.launch(intent)
+            }
 
             VoiceListeningScreen(
                 text = text,
-                isListening = isListening,
+                isListening = false, // Google 음성 입력은 Listening 상태가 따로 없음
                 onBackClick = { navController.popBackStack() },
                 onStopClick = {
-                    vm.stopListening()
                     navController.navigate(
                         DestinationConfirmRoute(
-                            placeName = vm.text.value,
-                            address = "주소 확인 중…"
+                            placeName = vm.keywords.value
                         )
                     )
                 }
             )
+        }
+
+
+
+
+    }
+}
+
+@Composable
+fun RequestRecordAudioPermission(onGranted: () -> Unit) {
+    val context = LocalContext.current
+    val permission = Manifest.permission.RECORD_AUDIO
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) onGranted()
+    }
+
+    LaunchedEffect(Unit) {
+        if (ContextCompat.checkSelfPermission(context, permission)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            launcher.launch(permission)
+        } else {
+            onGranted()
         }
     }
 }

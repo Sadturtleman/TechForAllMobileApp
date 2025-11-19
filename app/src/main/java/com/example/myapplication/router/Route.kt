@@ -33,5 +33,4 @@ data class DestinationListRoute(val query: String)
 @Serializable
 data class DestinationConfirmRoute(
     val placeName: String,
-    val address: String
 )

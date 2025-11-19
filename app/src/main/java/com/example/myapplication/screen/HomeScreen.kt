@@ -1,5 +1,7 @@
 package com.example.myapplication.screen
 
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,6 +28,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalTaxi
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.example.myapplication.data.model.rememberTTS
 
@@ -36,10 +42,22 @@ fun HomeScreen(
     onCallClick: () -> Unit = {}     // 🔥 추가
 ) {
     val context = LocalContext.current
-    val tts = rememberTTS(context)
-    LaunchedEffect(Unit) {
-        tts.speak("택시 호출 화면입니다. 호출 버튼을 눌러주세요.")
+    var isTtsReady by remember { mutableStateOf(false) }
+
+    val tts = remember {
+        TextToSpeech(context) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                isTtsReady = true
+            }
+        }
     }
+
+    LaunchedEffect(isTtsReady) {
+        if (isTtsReady) {
+            tts.speak("택시 호출 화면입니다. 호출 버튼을 눌러주세요.", TextToSpeech.QUEUE_FLUSH, null, null)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()

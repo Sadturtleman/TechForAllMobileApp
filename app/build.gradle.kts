@@ -1,3 +1,8 @@
+import java.util.Properties
+
+val properties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -7,7 +12,6 @@ plugins {
     id("com.google.devtools.ksp") version "2.0.21-1.0.25"
 
 }
-
 hilt {
     enableAggregatingTask = false
 }
@@ -28,10 +32,17 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+
         buildConfigField(
             "String",
             "KAKAO_REST_API_KEY",
-            "\"7601d91159ec911159f8dee8c9e0aa92\""
+            "\"${properties["KAKAO_REST_API_KEY"]}\""
+        )
+
+        buildConfigField(
+            "String",
+            "GEMINI_API_KEY",
+            "\"${properties["GEMINI_API_KEY"]}\""
         )
     }
 
@@ -65,6 +76,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.converter.scalars)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.material3)
@@ -77,6 +89,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.text)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.logging.interceptor)
+    implementation(libs.generativeai)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.androidx.runtime)

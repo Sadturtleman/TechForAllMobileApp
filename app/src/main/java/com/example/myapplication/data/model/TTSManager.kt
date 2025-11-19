@@ -2,6 +2,7 @@ package com.example.myapplication.data.model
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import android.util.Log
 import androidx.compose.runtime.*
 
 class TTSManager(context: Context) : TextToSpeech.OnInitListener {
@@ -26,10 +27,17 @@ class TTSManager(context: Context) : TextToSpeech.OnInitListener {
 }
 
 @Composable
-fun rememberTTS(context: Context): TTSManager {
-    val manager = remember { TTSManager(context) }
-    DisposableEffect(Unit) {
-        onDispose { manager.shutdown() }
+fun rememberTTS(context: Context): TextToSpeech {
+    val tts = remember {
+        TextToSpeech(context) { status ->
+            Log.d("TTS", "Ready status: $status")
+        }
     }
-    return manager
+    DisposableEffect(Unit) {
+        onDispose {
+            tts.stop()
+            tts.shutdown()
+        }
+    }
+    return tts
 }
