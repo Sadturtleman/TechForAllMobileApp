@@ -28,10 +28,16 @@ import com.example.myapplication.screen.DestinationInputScreen
 import com.example.myapplication.screen.DestinationListScreen
 import com.example.myapplication.screen.DetailUseScreen
 import com.example.myapplication.screen.FavoriteScreen
+import com.example.myapplication.screen.HelpRequestScreen
+import com.example.myapplication.screen.HelpVoiceInputScreen
+import com.example.myapplication.screen.KakaoMapScreen
 import com.example.myapplication.screen.ManualInputScreen
+import com.example.myapplication.screen.OnboardingIntroScreen
+import com.example.myapplication.screen.SplashScreen
 import com.example.myapplication.screen.TaxiAssignedScreen
 import com.example.myapplication.screen.TaxiFinishedScreen
 import com.example.myapplication.screen.TaxiSearchingScreen
+import com.example.myapplication.screen.UserInfoScreen
 import com.example.myapplication.screen.VoiceListeningScreen
 import com.example.myapplication.ui.viewmodel.SearchViewModel
 import com.example.myapplication.ui.viewmodel.VoiceViewModel
@@ -44,9 +50,85 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = HomeRoute
+        startDestination = SplashRoute
     ) {
+        // 🚕 스플래시
+        composable<SplashRoute> {
+            SplashScreen()
 
+            LaunchedEffect(Unit) {
+                delay(1500L)
+                navController.navigate(OnboardingRoute) {
+                    popUpTo(SplashRoute) { inclusive = true }
+                }
+            }
+        }
+
+        // ✋ 온보딩 (시작하기 / 로그인)
+        composable<OnboardingRoute> {
+            OnboardingIntroScreen(
+                onStartClick = {
+                    navController.navigate(UserInfoRoute)
+                },
+                onLoginClick = {
+                    navController.navigate(HomeRoute)
+                }
+            )
+        }
+
+        // ✍ 사용자 정보 입력
+        composable<UserInfoRoute> {
+            UserInfoScreen(
+                onNextClick = {
+                    navController.navigate(HomeRoute) {
+                        popUpTo(OnboardingRoute) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable<HelpRequestRoute>{
+            HelpRequestScreen(
+                onNeedHelpClick = {
+
+                },
+                onOkayClick = {navController.navigate(TaxiFinishedRoute)}
+            )
+        }
+
+        composable<HelpVoiceRoute> {
+
+            val vm: VoiceViewModel = hiltViewModel()
+
+            val launcher = rememberLauncherForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                val speech = result.data
+                    ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                    ?.firstOrNull() ?: ""
+
+                vm.onVoiceInput(speech)
+
+                // TODO: 결과에 따라 다음 로직 실행!
+                // ex: 기사에게 메시지 전송 / 요청 화면 이동
+            }
+
+
+            HelpVoiceInputScreen(
+                isListening = false,
+                onMicTouch = {
+                    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                        putExtra(
+                            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                        )
+                        putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
+                        putExtra(RecognizerIntent.EXTRA_PROMPT, "도움이 필요하신 내용을 말씀해주세요!")
+                    }
+                    launcher.launch(intent)
+                }
+            )
+        }
         // ---------------------------
         // 홈 / 기타 화면
         // ---------------------------
@@ -122,11 +204,37 @@ fun NavGraph(
                                 placeName = selected.placeName,
                             )
                         )
-                    }
+                    },
+                    onMapClick = {
+                        navController.navigate(KaKaoRoute(args.query))
+                    },
+                    paddingValues = paddingValues
                 )
             }
 
+            composable<KaKaoRoute> { entry ->
 
+                val args = entry.toRoute<KaKaoRoute>()  // 👈 수정 부분
+
+                val parentEntry = remember(entry) {
+                    navController.getBackStackEntry(SearchGraphRoute)
+                }
+
+                val vm: SearchViewModel = hiltViewModel(parentEntry)
+
+                LaunchedEffect(args.query) {
+                    vm.search(args.query)
+                }
+
+                KakaoMapScreen(
+                    searchViewModel = vm,
+                    onSelectItem = { selected ->
+                        navController.navigate(
+                            DestinationConfirmRoute(selected.placeName)
+                        )
+                    }
+                )
+            }
             // 목적지 최종 확인
             composable<DestinationConfirmRoute> { entry ->
                 val args = entry.toRoute<DestinationConfirmRoute>()
@@ -189,7 +297,7 @@ fun NavGraph(
             TaxiAssignedScreen(
                 onCall = {},
                 onCancel = { navController.popBackStack() },
-                onAutoNext = { navController.navigate(TaxiFinishedRoute) }
+                onAutoNext = { navController.navigate(HelpRequestRoute) }
             )
         }
 
@@ -250,26 +358,5 @@ fun NavGraph(
 
 
 
-    }
-}
-
-@Composable
-fun RequestRecordAudioPermission(onGranted: () -> Unit) {
-    val context = LocalContext.current
-    val permission = Manifest.permission.RECORD_AUDIO
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (granted) onGranted()
-    }
-
-    LaunchedEffect(Unit) {
-        if (ContextCompat.checkSelfPermission(context, permission)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            launcher.launch(permission)
-        } else {
-            onGranted()
-        }
     }
 }

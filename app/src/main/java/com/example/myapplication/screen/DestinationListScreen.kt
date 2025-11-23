@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -27,9 +29,11 @@ import com.example.myapplication.ui.viewmodel.SearchViewModel
 @Composable
 fun DestinationListScreen(
     query: String,
+    paddingValues: PaddingValues,
     searchViewModel: SearchViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    onItemClick: (SearchResult) -> Unit
+    onItemClick: (SearchResult) -> Unit,
+    onMapClick: () -> Unit
 ) {
     val resultList = searchViewModel.results.collectAsState().value
 
@@ -37,7 +41,12 @@ fun DestinationListScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFFFBF3))
-            .padding(16.dp)
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+                bottom = paddingValues.calculateBottomPadding() + 16.dp
+            )
     ) {
         Text(
             "뒤로가기",
@@ -56,13 +65,14 @@ fun DestinationListScreen(
         Spacer(Modifier.height(16.dp))
 
         if (resultList.isEmpty()) {
-            Text(
-                "검색 결과가 없습니다.",
-                fontSize = 16.sp,
-                color = Color.DarkGray
-            )
+            Text("검색 결과가 없습니다.", fontSize = 16.sp, color = Color.DarkGray)
+
+            Spacer(Modifier.weight(1f)) // 아래 버튼을 밑으로 밀기
         } else {
-            androidx.compose.foundation.lazy.LazyColumn {
+            // 🔽 스크롤 영역
+            androidx.compose.foundation.lazy.LazyColumn(
+                modifier = Modifier.weight(1f)
+            ) {
                 items(resultList) { result ->
                     ResultItem(
                         result = result,
@@ -71,8 +81,29 @@ fun DestinationListScreen(
                 }
             }
         }
+
+        Spacer(Modifier.height(12.dp))
+
+        // 🔥 화면 하단 고정 "지도로 보기" 버튼
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color(0xFFFFC727))
+                .clickable(onClick = onMapClick)
+                .padding(vertical = 14.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "지도로 보기",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Color.Black
+            )
+        }
     }
 }
+
 
 @Composable
 private fun ResultItem(

@@ -32,6 +32,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        ndk {
+            abiFilters.add("arm64-v8a")
+            abiFilters.add("armeabi-v7a")
+        }
+
 
         buildConfigField(
             "String",
@@ -44,6 +49,13 @@ android {
             "GEMINI_API_KEY",
             "\"${properties["GEMINI_API_KEY"]}\""
         )
+
+        buildConfigField(
+            "String",
+            "KAKAO_NATIVE_APP_KEY",
+            "\"${properties["KAKAO_NATIVE_APP_KEY"]}\""
+        )
+
     }
 
     buildTypes {
@@ -94,7 +106,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.androidx.runtime)
-
+    implementation(libs.runtime)
+    implementation(libs.android)
+    implementation(libs.androidx.foundation.layout)
     ksp(libs.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

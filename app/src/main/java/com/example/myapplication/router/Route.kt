@@ -16,7 +16,15 @@ import kotlinx.serialization.Serializable
 @Serializable object FavoriteRoute
 @Serializable object UseDetailRoute
 
+@Serializable
+data class KaKaoRoute(val query: String)
+@Serializable object SplashRoute
+@Serializable object OnboardingRoute
+@Serializable object UserInfoRoute
 
+@Serializable object HelpRequestRoute
+
+@Serializable object HelpVoiceRoute
 
 @Serializable
 object SearchGraphRoute

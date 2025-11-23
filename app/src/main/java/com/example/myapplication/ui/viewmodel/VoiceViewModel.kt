@@ -1,24 +1,14 @@
 package com.example.myapplication.ui.viewmodel
 
 import android.app.Application
-import android.content.Intent
-import android.os.Bundle
-import android.speech.RecognitionListener
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.BuildConfig
-import com.example.myapplication.data.api.KakaoSpeechClient
-import com.example.myapplication.data.di.AudioRecorder
-import com.example.myapplication.data.repository.GeminiRepository
 import com.google.ai.client.generativeai.GenerativeModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 
 class VoiceViewModel(
     application: Application
@@ -30,8 +20,6 @@ class VoiceViewModel(
     private val _keywords = MutableStateFlow("")
     val keywords = _keywords.asStateFlow()
 
-    // 🔥 Retrofit 기반 GeminiRepository 제거하고
-    // 🔥 Google Gemini Kotlin SDK 직접 사용
     private val generativeModel = GenerativeModel(
         modelName = "gemini-2.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY

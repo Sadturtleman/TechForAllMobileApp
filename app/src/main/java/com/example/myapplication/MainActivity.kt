@@ -19,29 +19,34 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.router.BottomNavBar
 import com.example.myapplication.router.NavGraph
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.kakao.vectormap.MapView
 import dagger.hilt.android.AndroidEntryPoint
 import java.security.MessageDigest
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         getHashKey(this)
+
         setContent {
             MyApplicationTheme {
                 val navController = rememberNavController()
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = { BottomNavBar(navController = navController) }
                 ) { paddingValues ->
                     NavGraph(navController, paddingValues)
-
                 }
             }
         }
     }
 }
+
 
 fun getHashKey(context: Context) {
     try {
