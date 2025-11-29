@@ -54,7 +54,7 @@ fun FavoriteCard(
     ) {
         AutoResizeText(
             text = favorite.title,
-            maxFontSize = 28.sp
+            maxFontSize = 32.sp
         )
     }
 }
@@ -65,7 +65,7 @@ fun FavoriteCard(
 fun AutoResizeText(
     text: String,
     modifier: Modifier = Modifier,
-    maxFontSize: TextUnit = 28.sp,
+    maxFontSize: TextUnit = 32.sp,
     minFontSize: TextUnit = 12.sp
 ) {
     var fontSize by remember { mutableStateOf(maxFontSize) }
@@ -76,7 +76,7 @@ fun AutoResizeText(
         fontSize = fontSize,
         textAlign = TextAlign.Center,
         softWrap = true,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold,
         maxLines = 2,
         overflow = TextOverflow.Clip,
         modifier = modifier.drawWithContent {

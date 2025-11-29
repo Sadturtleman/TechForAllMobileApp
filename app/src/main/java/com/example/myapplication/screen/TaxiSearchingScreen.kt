@@ -1,6 +1,7 @@
 package com.example.myapplication.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,27 +36,28 @@ fun TaxiSearchingScreen(
             .fillMaxSize()
             .background(Color(0xFFFFCC46))
             .padding(24.dp),
-        horizontalAlignment = Alignment.Start
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
             text = "택시를 찾고 있어요",
-            fontSize = 26.sp,
+            fontSize = 40.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         Text(
             text = "예상 소요 시간 3~5분",
-            fontSize = 16.sp,
+            fontSize = 32.sp,
             color = Color.Black
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(180.dp))
 
         WhiteButton(
             text = "주소 다시 선택",

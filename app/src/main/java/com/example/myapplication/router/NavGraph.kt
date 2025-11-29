@@ -90,7 +90,7 @@ fun NavGraph(
         composable<HelpRequestRoute>{
             HelpRequestScreen(
                 onNeedHelpClick = {
-
+                    navController.navigate(HelpVoiceRoute)
                 },
                 onOkayClick = {navController.navigate(TaxiFinishedRoute)}
             )
@@ -109,8 +109,7 @@ fun NavGraph(
 
                 vm.onVoiceInput(speech)
 
-                // TODO: 결과에 따라 다음 로직 실행!
-                // ex: 기사에게 메시지 전송 / 요청 화면 이동
+                navController.navigate(TaxiFinishedRoute)
             }
 
 
@@ -295,8 +294,6 @@ fun NavGraph(
 
         composable<TaxiAssignedRoute> {
             TaxiAssignedScreen(
-                onCall = {},
-                onCancel = { navController.popBackStack() },
                 onAutoNext = { navController.navigate(HelpRequestRoute) }
             )
         }

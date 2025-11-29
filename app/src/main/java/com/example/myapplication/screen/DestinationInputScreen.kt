@@ -57,101 +57,107 @@ fun DestinationInputScreen(
         }
     }
 
-    Column(
+    // 🔥 전체를 감싸는 Box 사용
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFFBF3))  // 배경색 (아이보리 느낌)
-            .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color(0xFFFFFBF3))
     ) {
 
-        // 🔙 뒤로가기
+        // 🔙 뒤로가기 (상단 고정)
         Text(
             text = "뒤로가기",
-            fontSize = 14.sp,
+            fontSize = 24.sp,
             modifier = Modifier
-                .align(Alignment.Start)
-                .padding(top = 16.dp)
+                .align(Alignment.TopStart)
+                .padding(start = 24.dp, top = 16.dp)
                 .clickable { onBackClick() }
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
 
-        // 제목
-        Text(
-            text = "어디로 가시나요?",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-
-        // 🎤 음성 버튼
-        Box(
+        // 🎯 중앙 콘텐츠
+        Column(
             modifier = Modifier
-                .size(180.dp)
-                .shadow(
-                    elevation = 8.dp,
-                    shape = RoundedCornerShape(80.dp),
-                    ambientColor = Color(0x40000000),
-                    spotColor = Color(0x40000000)
-                )
-                .clip(RoundedCornerShape(80.dp))
-                .background(Color(0xFF0F233A))
-                .clickable { onVoiceClick() },
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .align(Alignment.Center), // 🔥 중앙 정렬
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                // 아이콘
-                Icon(
-                    painter = painterResource(id = R.drawable.microphone),  // 🔥 음성 아이콘 추가 필요
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(40.dp)
-                )
+            // 제목
+            Text(
+                text = "어디로 가시나요?",
+                fontSize = 40.sp,
+                fontWeight = FontWeight.SemiBold
+            )
 
-                Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
-                // 버튼 텍스트
+
+            // 🎤 음성 버튼
+            Box(
+                modifier = Modifier
+                    .size(260.dp)
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(80.dp),
+                        ambientColor = Color(0x40000000),
+                        spotColor = Color(0x40000000)
+                    )
+                    .clip(RoundedCornerShape(80.dp))
+                    .background(Color(0xFF0F233A))
+                    .clickable { onVoiceClick() },
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.microphone),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(60.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "눌러서\n말하기",
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 예시 텍스트
+            Text(
+                text = "예 : 서울대병원, 서울시청",
+                fontSize = 24.sp,
+                color = Color.Gray
+            )
+
+            Spacer(modifier = Modifier.height(80.dp))
+
+            // 🟡 직접 입력하기 버튼
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFFFFC428))
+                    .clickable { onManualClick() },
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
-                    text = "눌러서\n말하기",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
-                    textAlign = TextAlign.Center
+                    text = "직접 입력하기",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 예시 텍스트
-        Text(
-            text = "예 : 서울대병원, 서울시청",
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
-
-        Spacer(modifier = Modifier.height(80.dp))
-
-
-        // 🟡 직접 입력하기
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFFFFC428))
-                .clickable { onManualClick() },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "직접 입력하기",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
     }
 }
+

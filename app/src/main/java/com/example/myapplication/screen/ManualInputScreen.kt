@@ -91,14 +91,14 @@ fun ManualInputScreen(
                     modifier = Modifier.weight(1f),
                     textStyle = TextStyle(
                         color = Color.Black,
-                        fontSize = 16.sp
+                        fontSize = 32.sp
                     ),
                     decorationBox = { innerTextField ->
                         if (text.isEmpty()) {
                             Text(
                                 text = "예 : 서울역",
                                 color = Color(0xFF9E9E9E),
-                                fontSize = 16.sp
+                                fontSize = 32.sp
                             )
                         }
                         innerTextField()
@@ -112,7 +112,7 @@ fun ManualInputScreen(
                         contentDescription = "Clear",
                         tint = Color.Black,
                         modifier = Modifier
-                            .size(22.dp)
+                            .size(44.dp)
                             .clickable { text = "" }
                     )
                 }

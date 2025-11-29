@@ -39,7 +39,7 @@ fun HelpVoiceInputScreen(
 
         Text(
             "어떤 도움이 필요하세요?",
-            fontSize = 20.sp,
+            fontSize = 36.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black,
             textAlign = TextAlign.Center
@@ -49,7 +49,7 @@ fun HelpVoiceInputScreen(
 
         Box(
             modifier = Modifier
-                .size(170.dp)
+                .size(260.dp)
                 .background(Color(0xFF0E375F), shape = CircleShape)
                 .clickable { onMicTouch() },
             contentAlignment = Alignment.Center
@@ -64,7 +64,7 @@ fun HelpVoiceInputScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     if (isListening) "듣는중..." else "눌러서 말하기",
-                    fontSize = 16.sp,
+                    fontSize = 36.sp,
                     color = Color.White
                 )
             }
@@ -74,7 +74,7 @@ fun HelpVoiceInputScreen(
 
         Text(
             "예: 길이 막아요, 탑승을 도와주세요 등",
-            fontSize = 13.sp,
+            fontSize = 24.sp,
             color = Color.Gray,
             textAlign = TextAlign.Center
         )

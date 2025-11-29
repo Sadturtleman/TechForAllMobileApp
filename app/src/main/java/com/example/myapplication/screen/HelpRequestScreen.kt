@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,7 +37,7 @@ fun HelpRequestScreen(
 
         Text(
             "기사님께 도움 요청이\n필요하신가요?",
-            fontSize = 20.sp,
+            fontSize = 40.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             color = Color.Black
@@ -48,25 +48,25 @@ fun HelpRequestScreen(
         Button(
             onClick = onNeedHelpClick,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+                .width(300.dp)
+                .height(100.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0E375F))
         ) {
-            Text("필요해요", color = Color.White)
+            Text("필요해요", color = Color.White, fontSize = 32.sp)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         OutlinedButton(
             onClick = onOkayClick,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+                .width(300.dp)
+                .height(100.dp),
             shape = RoundedCornerShape(8.dp),
             border = BorderStroke(1.dp, Color(0xFF0E375F))
         ) {
-            Text("괜찮아요", color = Color(0xFF0E375F))
+            Text("괜찮아요", color = Color(0xFF0E375F), fontSize = 32.sp)
         }
     }
 }

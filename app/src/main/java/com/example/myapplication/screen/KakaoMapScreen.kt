@@ -89,8 +89,8 @@ fun KakaoMapScreen(
                             .padding(12.dp)
                     ) {
                         Column {
-                            Text(item.placeName, fontWeight = FontWeight.Bold)
-                            Text(item.address, fontSize = 13.sp, color = Color.Gray)
+                            Text(item.placeName, fontWeight = FontWeight.Bold, fontSize = 32.sp)
+                            Text(item.address, fontSize = 24.sp, color = Color.Gray)
                         }
                     }
                 }

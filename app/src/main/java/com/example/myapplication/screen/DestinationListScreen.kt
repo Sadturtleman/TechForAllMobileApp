@@ -2,6 +2,7 @@ package com.example.myapplication.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -46,7 +48,9 @@ fun DestinationListScreen(
                 end = 16.dp,
                 top = 16.dp,
                 bottom = paddingValues.calculateBottomPadding() + 16.dp
-            )
+            ),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             "뒤로가기",
@@ -87,7 +91,8 @@ fun DestinationListScreen(
         // 🔥 화면 하단 고정 "지도로 보기" 버튼
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(245.dp)
+                .height(100.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color(0xFFFFC727))
                 .clickable(onClick = onMapClick)
@@ -97,7 +102,7 @@ fun DestinationListScreen(
             Text(
                 text = "지도로 보기",
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                fontSize = 32.sp,
                 color = Color.Black
             )
         }
@@ -120,8 +125,8 @@ private fun ResultItem(
             .padding(16.dp)
     ) {
         Column {
-            Text(result.placeName, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Text(result.address, fontSize = 14.sp, color = Color.DarkGray)
+            Text(result.placeName, fontSize = 32.sp, fontWeight = FontWeight.Bold)
+            Text(result.address, fontSize = 24.sp, color = Color.DarkGray)
         }
     }
 }

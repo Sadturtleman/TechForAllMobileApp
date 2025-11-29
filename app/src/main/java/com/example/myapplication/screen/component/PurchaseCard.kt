@@ -36,16 +36,16 @@ fun PurchaseCard(
             Text(
                 text = "${purchase.arriveDate.monthNumber}월 ${purchase.arriveDate.dayOfMonth}일 탑승",
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
+                fontSize = 24.sp,
                 color = Color(0xFF1B2A41)
             )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(19.dp))
 
             Text(
                 text = "도착장소 : ${purchase.title}",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF1B2A41)
             )
 
@@ -53,16 +53,16 @@ fun PurchaseCard(
 
             Text(
                 text = "결제 금액 : %,d원".format(purchase.money),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF1B2A41)
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(35.dp))
 
             Text(
                 text = "자세히 보기",
-                fontSize = 18.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFFFFC933)
             )

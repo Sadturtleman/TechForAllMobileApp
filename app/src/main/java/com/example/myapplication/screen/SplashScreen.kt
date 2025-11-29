@@ -1,5 +1,7 @@
 package com.example.myapplication.screen
 
+import android.window.SplashScreen
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.R
 
@@ -28,17 +31,22 @@ fun SplashScreen() {
         ) {
             Box(
                 modifier = Modifier
-                    .size(140.dp)
+                    .size(334.dp)
                     .background(Color(0xFFFFC727), shape = RoundedCornerShape(40.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.logo), // 택시 아이콘
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
                     contentDescription = null,
-                    tint = Color(0xFF0E375F),
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.size(334.dp)
                 )
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun SplashScreenPreview(){
+    SplashScreen()
 }

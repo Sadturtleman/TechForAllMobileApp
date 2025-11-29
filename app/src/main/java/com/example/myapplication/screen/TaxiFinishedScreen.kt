@@ -2,6 +2,7 @@ package com.example.myapplication.screen
 
 import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -49,19 +51,21 @@ fun TaxiFinishedScreen(
 
     LaunchedEffect(isTtsReady) {
         if (isTtsReady) {
-            tts.speak("택시 호출 화면입니다. 호출 버튼을 눌러주세요.", TextToSpeech.QUEUE_FLUSH, null, null)
+            tts.speak("하차 완료", TextToSpeech.QUEUE_FLUSH, null, null)
         }
     }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFFFBF3))
-            .padding(24.dp)
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text("하차 완료", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+        Text("하차 완료", fontSize = 40.sp, fontWeight = FontWeight.Bold)
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         Box(
             modifier = Modifier
@@ -73,27 +77,27 @@ fun TaxiFinishedScreen(
             Column {
                 Text(
                     text = "결제 금액",
-                    fontSize = 16.sp,
+                    fontSize = 40.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = payment,
-                    fontSize = 24.sp,
+                    fontSize = 40.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(60.dp))
 
-        Text("도착장소 : $place", fontSize = 16.sp)
-        Text("도착시간 : $time", fontSize = 16.sp)
+        Text("도착장소 : $place", fontSize = 32.sp)
+        Text("도착시간 : $time", fontSize = 32.sp)
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(60.dp))
 
         PrimaryButton(text = "전화 걸기", onClick = onCall)
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(3.dp))
 
         WhiteButton(text = "즐겨찾기 등록", onClick = onSaveFavorite)
     }

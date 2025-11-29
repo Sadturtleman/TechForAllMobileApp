@@ -2,6 +2,7 @@ package com.example.myapplication.screen
 
 import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,8 +34,6 @@ import com.example.myapplication.screen.component.WhiteButton
 fun TaxiAssignedScreen(
     carNumber: String = "13가 2345",
     eta: String = "3분 후 도착 예정",
-    onCall: () -> Unit = {},
-    onCancel: () -> Unit = {},
     onAutoNext: () -> Unit     // 🔥 자동 이동 콜백 추가됨
 ) {
     val context = LocalContext.current
@@ -50,7 +49,7 @@ fun TaxiAssignedScreen(
 
     LaunchedEffect(isTtsReady) {
         if (isTtsReady) {
-            tts.speak("택시 호출 화면입니다. 호출 버튼을 눌러주세요.", TextToSpeech.QUEUE_FLUSH, null, null)
+            tts.speak("13가 2345 3분 후 도착 예정", TextToSpeech.QUEUE_FLUSH, null, null)
         }
         kotlinx.coroutines.delay(4000)
         onAutoNext()
@@ -61,10 +60,11 @@ fun TaxiAssignedScreen(
             .fillMaxSize()
             .background(Color(0xFFFFFBF3))
             .padding(24.dp),
-        horizontalAlignment = Alignment.Start
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
 
-        Text("택시 호출 완료", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+        Text("택시 호출 완료", fontSize = 40.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -86,16 +86,7 @@ fun TaxiAssignedScreen(
 
         Text(
             text = "기사님이 오고 있습니다.\n현재 위치에 계세요.",
-            fontSize = 16.sp,
-            lineHeight = 22.sp
+            fontSize = 32.sp,
         )
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        PrimaryButton(text = "전화 걸기", onClick = onCall)
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        WhiteButton(text = "호출 취소", onClick = onCancel)
     }
 }
