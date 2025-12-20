@@ -1,0 +1,27 @@
+{
+  "name": "techforallmobileapp",
+  "version": "1.0.0",
+  "description": "Tech For All Mobile App 입니다.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sadturtleman/TechForAllMobileApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Sadturtleman/TechForAllMobileApp/issues"
+  },
+  "homepage": "https://github.com/Sadturtleman/TechForAllMobileApp#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "husky": "^9.1.7"
+  }
+}

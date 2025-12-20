@@ -9,22 +9,22 @@ class PurchaseTaxiFactory @Inject constructor(){
     fun getPurchaseTaxiList(): List<PurchaseTaxi> {
         return listOf(
             PurchaseTaxi(
-                title = "서울 아파트",
+                title = "서울역",
                 arriveDate = LocalDate(2025, 10, 11),
-                detailTitle = "서울 강동구 아파트",
+                detailTitle = "서울 중구",
                 money = 30100
             ),
             PurchaseTaxi(
-                title = "서울 아파트",
-                arriveDate = LocalDate(2025, 10, 11),
-                detailTitle = "서울 강동구 아파트",
-                money = 30100
+                title = "건국대학교",
+                arriveDate = LocalDate(2025, 8, 13),
+                detailTitle = "서울 광진구",
+                money = 27800
             ),
             PurchaseTaxi(
-                title = "서울 아파트",
-                arriveDate = LocalDate(2025, 10, 11),
-                detailTitle = "서울 강동구 아파트",
-                money = 30100
+                title = "숭례문",
+                arriveDate = LocalDate(2025, 7, 24),
+                detailTitle = "서울 중구",
+                money = 14000
             )
         )
     }

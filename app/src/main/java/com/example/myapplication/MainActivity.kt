@@ -8,16 +8,28 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.router.BottomNavBar
 import com.example.myapplication.router.NavGraph
+import com.example.myapplication.router.Screen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.kakao.vectormap.MapView
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,9 +48,27 @@ class MainActivity : ComponentActivity() {
             MyApplicationTheme {
                 val navController = rememberNavController()
 
+                // 🔥 현재 route 구하기
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+
+                // 🔥 BottomBar를 보여줄 route 목록
+                val bottomBarRoutes = listOf(
+                    Screen.Home.routeString,
+                    Screen.Favorite.routeString,
+                    Screen.UseDetail.routeString
+                )
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    bottomBar = { BottomNavBar(navController = navController) }
+                    // 🔥 조건부로 BottomNavBar 표시
+                    bottomBar = {
+
+                        if (currentRoute in bottomBarRoutes) {
+                            BottomNavBar(navController)
+                        }
+
+                    }
                 ) { paddingValues ->
                     NavGraph(navController, paddingValues)
                 }
@@ -46,6 +76,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 
 fun getHashKey(context: Context) {
