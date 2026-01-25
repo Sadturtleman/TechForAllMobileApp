@@ -26,6 +26,7 @@ navigationRuntimeKtx = "2.9.6"
 runtime = "1.9.4"
 runtimeVersion = "1.9.5"
 foundationLayoutVersion = "1.9.5"
+cameraVersion = "1.5.2"
 
 [libraries]
 android = { module = "com.kakao.maps.open:android", version.ref = "android" }
@@ -63,6 +64,10 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converte
 androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtimeVersion" }
 androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayoutVersion" }
+androidx-camera-core = {group = "androidx.camera", name = "camera-core", version.ref = "cameraVersion"}
+androidx-camera-camera2 = {group = "androidx.camera", name = "camera-camera2", version.ref = "cameraVersion"}
+androidx-camera-lifecycle = {group = "androidx.camera", name = "camera-lifecycle", version.ref = "cameraVersion"}
+androidx-camera-view = {group = "androidx.camera", name = "camera-view", version.ref = "cameraVersion"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

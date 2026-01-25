@@ -31,7 +31,7 @@ class SearchViewModel @Inject constructor(
     }
     fun search(query: String) {
         viewModelScope.launch {
-            val list = repo.search(query)
+            val list = emptyList<SearchResult>()
             _results.value = list     // ← 이거 넣어줘야 UI에 전달됨
         }
     }

@@ -36,6 +36,9 @@ object DestinationInputRoute
 object ManualInputRoute
 
 @Serializable
+object ARRoute
+
+@Serializable
 data class DestinationListRoute(val query: String)
 
 @Serializable

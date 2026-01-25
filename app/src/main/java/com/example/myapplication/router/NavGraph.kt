@@ -22,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
+import com.example.myapplication.screen.ARFlowManager
 import com.example.myapplication.screen.DestinationConfirmScreen
 import com.example.myapplication.screen.HomeScreen
 import com.example.myapplication.screen.DestinationInputScreen
@@ -94,6 +95,9 @@ fun NavGraph(
                 },
                 onOkayClick = {navController.navigate(TaxiFinishedRoute)}
             )
+        }
+        composable<ARRoute> {
+            ARFlowManager()
         }
 
         composable<HelpVoiceRoute> {
@@ -258,7 +262,7 @@ fun NavGraph(
                         },
                         onListClick = {
                             navController.navigate(
-                                DestinationListRoute(args.placeName)
+                                ARRoute
                             )
                         }
                     )
@@ -272,7 +276,7 @@ fun NavGraph(
                         },
                         onListClick = {
                             navController.navigate(
-                                DestinationListRoute(args.placeName)
+                                ARRoute
                             )
                         }
                     )
