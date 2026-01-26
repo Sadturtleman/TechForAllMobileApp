@@ -35,6 +35,8 @@ android {
         ndk {
             abiFilters.add("arm64-v8a")
             abiFilters.add("armeabi-v7a")
+            abiFilters.add("x86_64")
+            abiFilters.add("x86")
         }
 
 
@@ -99,6 +101,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.text)
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.logging.interceptor)

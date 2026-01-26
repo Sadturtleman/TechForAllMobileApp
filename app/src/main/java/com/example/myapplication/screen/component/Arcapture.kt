@@ -9,6 +9,7 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,14 +40,40 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.myapplication.ui.theme.Roboto
+import com.google.accompanist.permissions.*
 
-// --- 1. Flow Manager (상태 관리자) ---
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ARFlowManager() {
     val context = LocalContext.current
+
+    // 1. 카메라 권한 상태 관찰
+    val cameraPermissionState = rememberPermissionState(
+        android.Manifest.permission.CAMERA
+    )
+
+    // 2. 권한 상태에 따른 분기 처리
+    when {
+        cameraPermissionState.status.isGranted -> {
+            // [상태 1] 권한이 허용된 경우: 기존 카메라 로직 실행
+            CameraContent(context)
+        }
+        cameraPermissionState.status.shouldShowRationale ||
+                !cameraPermissionState.status.isGranted -> {
+            // [상태 2] 권한이 없거나 거부된 경우: 가이드 UI 제공
+            PermissionGuidanceScreen(
+                shouldShowRationale = cameraPermissionState.status.shouldShowRationale,
+                onRequestPermission = { cameraPermissionState.launchPermissionRequest() }
+            )
+        }
+    }
+}
+
+@Composable
+fun CameraContent(context: android.content.Context) {
     val controller = remember {
         LifecycleCameraController(context).apply {
-            cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
             setEnabledUseCases(LifecycleCameraController.IMAGE_ANALYSIS or LifecycleCameraController.IMAGE_CAPTURE)
         }
     }
@@ -56,10 +83,9 @@ fun ARFlowManager() {
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (!isRecognized) {
-            // 스캐닝 화면: 인식 로직(onRecognized)을 전달합니다.
             ARLocationScreen(
                 controller = controller,
-                onBackClick = { /* 뒤로가기 로직 */ },
+                onBackClick = { /* 뒤로가기 */ },
                 onRecognized = {
                     captureSnapshot(controller, context) { bitmap ->
                         capturedBitmap = bitmap
@@ -68,7 +94,6 @@ fun ARFlowManager() {
                 }
             )
         } else {
-            // 확인 화면: 캡처된 배경과 함께 표시합니다.
             ARLocationConfirmationScreen(
                 capturedBitmap = capturedBitmap,
                 placeName = "00 마트",
@@ -78,6 +103,46 @@ fun ARFlowManager() {
                     isRecognized = false
                 }
             )
+        }
+    }
+}
+
+@Composable
+fun PermissionGuidanceScreen(
+    shouldShowRationale: Boolean,
+    onRequestPermission: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF1B2A41)) // 다크 테마 기반의 견고한 느낌
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "카메라 권한이 필요합니다",
+            color = Color.White,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = if (shouldShowRationale)
+                "주변 위치를 인식하기 위해 카메라 권한이 반드시 필요합니다."
+            else "AR 기능을 이용하시려면 카메라 권한을 허용해주세요.",
+            color = Color.LightGray,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        Button(
+            onClick = onRequestPermission,
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFC933)),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.fillMaxWidth().height(56.dp)
+        ) {
+            Text("권한 허용하기", color = Color.Black, fontWeight = FontWeight.Bold)
         }
     }
 }
